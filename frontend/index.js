@@ -14,7 +14,7 @@ const calcTime = (timestamp) => {
 const renderData = (data) => {
   const main = document.querySelector("main");
 
-  data.reverse().forEach(async(obj) => {
+  data.reverse().forEach(async (obj) => {
     const div = document.createElement("div");
     div.className = "item-list";
 
@@ -42,22 +42,33 @@ const renderData = (data) => {
     InfoPriceDiv.className = "item-list__info-price";
     InfoPriceDiv.innerText = obj.price;
 
-    imgDiv.appendChild(img);
     InfoDiv.appendChild(InfoTitleDiv);
     InfoDiv.appendChild(InfoMetaDiv);
     InfoDiv.appendChild(InfoPriceDiv);
+    imgDiv.appendChild(img);
     div.appendChild(imgDiv);
     div.appendChild(InfoDiv);
     main.appendChild(div);
   });
-}
+};
 
-const fetchList = async() => {
-  const res = await fetch('/items');
+const fetchList = async () => {
+  const accessToken = window.localStorage.getItem("token");
+
+  const res = await fetch("/items", {
+    headers: {
+      Authorization: `Bearer ${accessToken}`
+    },
+  });
+  
+  if (res.status === 401) {
+    alert("로그인이 필요합니다!");
+    window.location.pathname = "/login.html";
+    return;
+  }
+
   const data = await res.json();
-  let main = document.querySelector("main");
-  main = "";
   renderData(data);
-}
+};
 
 fetchList();
